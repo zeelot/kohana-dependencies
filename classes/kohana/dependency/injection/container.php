@@ -38,7 +38,7 @@ class Kohana_Dependency_Injection_Container {
 		return $instance;
 	}
 	
-	public function _cache($key, $instance = NULL)
+	protected function _cache($key, $instance = NULL)
 	{
 		// Setter
 		if (is_object($instance))
@@ -112,19 +112,18 @@ class Kohana_Dependency_Injection_Container {
 	
 	protected function _resolve_arguments(array $arguments)
 	{
-		static $recursion_level = 0;
-		
-		$args = array();
-		foreach ($arguments as $argument)
+		foreach ($arguments as & $argument)
 		{
-			if (is_string($argument) AND preg_match('/\%.+\%/', $argument))
+			if (is_string($argument))
 			{
-				if ($recursion_level > 10)
-					throw new Dependency_Exception('The maximum recursion level for the Dependency_Injection_Container was exceeded. You should check your dependencies config for recursive or circular dependency definitions.');
-			
-				$recursion_level++;
-				$args[] = $this->get($argument);
-				$recursion_level--;
+				if (preg_match('/\%.+\%/', $argument))
+				{
+					$argument = $this->get(trim($argument, '%'));
+				}
+				elseif (preg_match('/\@.+\@/', $argument))
+				{
+					$argument = Kohana::config(trim($argument, '@'));
+				}
 			}
 		}
 		

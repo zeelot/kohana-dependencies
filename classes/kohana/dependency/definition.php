@@ -25,14 +25,14 @@ class Kohana_Dependency_Definition {
 		foreach (explode('.', $key) as $sub_key)
 		{
 			$current_path = trim($current_path.'.'.$sub_key, '.');
-			$path_settings = Arr::path($dependencies, $current_path.'.settings', array());
+			$path_settings = Arr::path($dependencies, $current_path.'._settings', array());
 			$this->_settings = Arr::overwrite($this->_settings, $path_settings);
 		}
 		
 		// Make sure the "class" setting is valid
 		if (empty($this->_settings['class']))
 		{
-			throw new Dependency_Exception('Cannot determine which class to load based on the dependency definition.');
+			$this->_settings['class'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $this->_settings['class'])));
 		}
 		
 		// Make sure the "path" setting is valid
@@ -74,7 +74,7 @@ class Kohana_Dependency_Definition {
 			$this->_settings['methods'] = array();
 		}
 	}
-	
+
 	public function __get($setting)
 	{
 		if (array_key_exists($setting, $this->_settings))
