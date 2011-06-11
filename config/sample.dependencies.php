@@ -49,10 +49,10 @@ return array
 			(
 				'class'     => 'Swift_SmtpTransport',
 				'path'      => 'vendor/swiftmailer/lib/classes/Swift/SmtpTransport',
-				'arguments' => array('127.0.0.1', 465),
+				'arguments' => array('@email.host@', '@email.port@'),
 				'methods'   => array
 				(
-					array('setEncryption', array('tls')),
+					array('setEncryption', array('@email.encryption@')),
 				),
 			),
 		),
