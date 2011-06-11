@@ -124,7 +124,7 @@ class Kohana_Dependency_Injection_Container {
 					{
 						list($group, $path) = explode('.', $argument, 2);
 					}
-					$argument = Arr::path($this->config->load($group), $path);
+					$argument = Arr::path($this->_config->load($group), $path);
 				}
 			}
 		}
