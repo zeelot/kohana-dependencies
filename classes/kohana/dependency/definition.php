@@ -2,30 +2,34 @@
 
 class Kohana_Dependency_Definition {
 
-	public static function defaults()
-	{
-		return array
-		(
-			'class'       => NULL,    // The class that is to be created.
-			'path'        => NULL,    // The path to the file containing the class. Will try to autoload the class if no path is provided. Assumes ".php" extension.
-			'constructor' => NULL,    // The method used to create the class. Will use "__construct()" if none is provided.
-			'arguments'   => NULL,    // The arguments to be passed to the constructor method.
-			'shared'      => FALSE,   // The shared setting determines if the object will be cached.
-			'methods'     => array(), // Additional methods (and their arguments) that need to be called on the created object.
-		);
-	}
+	protected static $_definitions = array();
+	protected static $_defaults = array
+	(
+		'class'       => NULL,    // The class that is to be created.
+		'path'        => NULL,    // The path to the file containing the class. Will try to autoload the class if no path is provided. Assumes ".php" extension.
+		'constructor' => NULL,    // The method used to create the class. Will use "__construct()" if none is provided.
+		'arguments'   => NULL,    // The arguments to be passed to the constructor method.
+		'shared'      => FALSE,   // The shared setting determines if the object will be cached.
+		'methods'     => array(), // Additional methods (and their arguments) that need to be called on the created object.
+	);
 	
 	protected $_settings;
 	
-	public function __construct($key, array $dependencies)
+	public function __construct($key, Config $config)
 	{
+		// Store the list of definitions from the config
+		if (empty(self::$_definitions))
+		{
+			self::$_definitions = $config->load('dependencies')->as_array();
+		}
+
 		// Merge all relevant dependency definitions into one collection of settings
-		$this->_settings = Dependency_Definition::defaults();
+		$this->_settings = self::$_defaults;
 		$current_path = '';
 		foreach (explode('.', $key) as $sub_key)
 		{
 			$current_path = trim($current_path.'.'.$sub_key, '.');
-			$path_settings = Arr::path($dependencies, $current_path.'._settings', array());
+			$path_settings = Arr::path(self::$_definitions, $current_path.'._settings', array());
 			$this->_settings = Arr::overwrite($this->_settings, $path_settings);
 		}
 		

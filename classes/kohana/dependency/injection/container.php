@@ -4,17 +4,11 @@ class Kohana_Dependency_Injection_Container {
 
 	protected $_cache;
 	protected $_config;
-	protected $_dependencies;
-	
+
 	public function __construct(Config $config)
 	{
 		$this->_cache  = array();
 		$this->_config = $config;
-		
-		if ($this->_dependencies == NULL)
-		{
-			$this->_dependencies = $this->_config->load('dependencies')->as_array();
-		}
 	}
 	
 	public function get($key)
@@ -24,7 +18,7 @@ class Kohana_Dependency_Injection_Container {
 			return $instance;
 
 		// Build a new definition
-		$definition = new Dependency_Definition($key, $this->_dependencies);
+		$definition = new Dependency_Definition($key, $this->_config);
 
 		// Create an instance of the class
 		$instance = $this->_build($definition);
@@ -99,10 +93,12 @@ class Kohana_Dependency_Injection_Container {
 	
 	protected function _include_path($path)
 	{
-		$path      = explode('/', $path, 2);
-		$directory = Arr::get($path, 0);
-		$filepath  = Arr::get($path, 1);
-		$file      = Kohana::find_file($directory, $filepath);
+		$file = NULL;
+		if (strpos($path, '/') !== FALSE)
+		{
+			list($directory, $filepath) = explode('/', $path, 2);
+			$file = Kohana::find_file($directory, $filepath);
+		}
 		
 		if (empty($file))
 			throw new Dependency_Exception('Could not find the path to include for the dependency definition.');
@@ -122,7 +118,13 @@ class Kohana_Dependency_Injection_Container {
 				}
 				elseif (preg_match('/\@.+\@/', $argument))
 				{
-					$argument = Kohana::config(trim($argument, '@'));
+					$argument = trim($argument, '@');
+					$group = $path = NULL;
+					if (strpos($argument, '.') !== FALSE)
+					{
+						list($group, $path) = explode('.', $argument, 2);
+					}
+					$argument = Arr::path($this->config->load($group), $path);
 				}
 			}
 		}
