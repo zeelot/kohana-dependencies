@@ -4,6 +4,7 @@ class Kohana_Dependency_Injection_Container {
 
 	protected $_cache;
 	protected $_config;
+	protected $_definitions;
 
 	public function __construct(Config $config)
 	{
@@ -18,7 +19,11 @@ class Kohana_Dependency_Injection_Container {
 			return $instance;
 
 		// Build a new definition
-		$definition = new Dependency_Definition($key, $this->_config);
+		if ( ! isset($this->_definitions[$key]))
+		{
+			$definition = new Dependency_Definition($key, $this->_config);
+			$this->_definitions[$key] = $definition;
+		}
 
 		// Create an instance of the class
 		$instance = $this->_build($definition);
