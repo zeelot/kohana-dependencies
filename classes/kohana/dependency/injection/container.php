@@ -18,14 +18,14 @@ class Kohana_Dependency_Injection_Container {
 		if ($instance = $this->_cache($key))
 			return $instance;
 
-		// Build a new definition
+		// Get the dependency definition
 		if ( ! isset($this->_definitions[$key]))
 		{
-			$definition = new Dependency_Definition($key, $this->_config);
-			$this->_definitions[$key] = $definition;
+			$this->_definitions[$key] = new Dependency_Definition($key, $this->_config);
 		}
+		$definition = $this->_definitions[$key];
 
-		// Create an instance of the class
+		// Create an instance of the class using the definition
 		$instance = $this->_build($definition);
 		
 		// Cache the instance if it is shared
@@ -56,7 +56,7 @@ class Kohana_Dependency_Injection_Container {
 	protected function _build(Dependency_Definition $definition)
 	{
 		// Make sure the class exists
-		if ( ! empty($definition->path) AND ! class_exists($definition->class))
+		if ( ! class_exists($definition->class) AND ! empty($definition->path))
 		{
 			$this->_include_path($definition->path);
 		}

@@ -24,59 +24,61 @@ class Kohana_Dependency_Definition {
 		}
 
 		// Merge all relevant dependency definitions into one collection of settings
-		$this->_settings = self::$_defaults;
+		$settings = self::$_defaults;
 		$current_path = '';
 		foreach (explode('.', $key) as $sub_key)
 		{
 			$current_path = trim($current_path.'.'.$sub_key, '.');
 			$path_settings = Arr::path(self::$_definitions, $current_path.'._settings', array());
-			$this->_settings = Arr::overwrite($this->_settings, $path_settings);
+			$settings = Arr::overwrite($settings, $path_settings);
 		}
 		
 		// Make sure the "class" setting is valid
-		if (empty($this->_settings['class']))
+		if (empty($settings['class']))
 		{
-			$this->_settings['class'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $this->_settings['class'])));
+			$settings['class'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $settings['class'])));
 		}
 		
 		// Make sure the "path" setting is valid
-		if ( ! is_string($this->_settings['path']))
+		if ( ! is_string($settings['path']))
 		{
-			$this->_settings['path'] = NULL;
+			$settings['path'] = NULL;
 		}
 		
 		// Make sure the "constructor" setting is valid
-		if ( ! is_string($this->_settings['constructor']))
+		if ( ! is_string($settings['constructor']))
 		{
-			$this->_settings['constructor'] = NULL;
+			$settings['constructor'] = NULL;
 		}
 		
 		// Make sure the "arguments" setting is valid
-		if ( ! is_array($this->_settings['arguments']))
+		if ( ! is_array($settings['arguments']))
 		{
-			$this->_settings['arguments'] = array();
+			$settings['arguments'] = array();
 		}
 		
 		// Make sure the "shared" setting is valid
-		$this->_settings['shared'] = (bool) $this->_settings['shared'];
+		$settings['shared'] = (bool) $settings['shared'];
 		
 		// Make sure the "methods" setting is valid
-		if (is_array($this->_settings['methods']))
+		if (is_array($settings['methods']))
 		{
 			$methods = array();
-			foreach ($this->_settings['methods'] as $method)
+			foreach ($settings['methods'] as $method)
 			{
 				$method_name = (isset($method[0]) AND is_string($method[0])) ? $method[0] : NULL;
 				$arguments   = (isset($method[1]) AND is_array($method[1])) ? $method[1] : NULL;
 				$methods[]   = array($method_name, $arguments);
 			}
 			
-			$this->_settings['methods'] = $methods;
+			$settings['methods'] = $methods;
 		}
 		else
 		{
-			$this->_settings['methods'] = array();
+			$settings['methods'] = array();
 		}
+
+		$this->_settings = $settings;
 	}
 
 	public function __get($setting)
