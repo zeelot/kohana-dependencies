@@ -132,22 +132,19 @@ class Kohana_Dependency_Definition {
 		return (bool) $this->_shared;
 	}
 
-	public function merge_with(Dependency_Definition $new_definition)
+	public function merge_with(Dependency_Definition $right)
 	{
-		$current_definition = clone $this;
-		foreach(get_object_vars($this) as $key => $value)
+		$left = clone $this;
+		
+		foreach (get_object_vars($this) as $key => $value)
 		{
-			$get = ltrim($key, '_');
-			$set = 'set'.$key;
-
-			$new_value = $new_definition->$get;
-			if ( ! empty($new_value))
+			if ( ! empty($right->$key))
 			{
-				$current_definition->$set($new_value);
+				$left->$key = $right->$key;
 			}
 		}
 
-		return $current_definition;
+		return $left;
 	}
 
 	public function __get($property)
