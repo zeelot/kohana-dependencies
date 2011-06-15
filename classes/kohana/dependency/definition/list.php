@@ -130,7 +130,7 @@ class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAcc
 
 	public function offsetUnset($key)
 	{
-		unset($this->_items[$key]);
+		unset($this->_definitions[$key]);
 	}
 
 }
