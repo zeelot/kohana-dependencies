@@ -11,107 +11,101 @@
 
 You can create a container from an array of dependency definitions (i.e. from a config file)
 
-```php
-// Creation Code
-$definitions = Dependency_Definition_List::factory()
-	->from_array(Kohana::config('dependencies')->as_array());
-$container = new Dependency_Container($definitions);
-```
+	// Creation Code
+	$definitions = Dependency_Definition_List::factory()
+		->from_array(Kohana::config('dependencies')->as_array());
+	$container = new Dependency_Container($definitions);
 
-```php
-// Config File
-return array
-(
-	'session' => array
+	// Config File
+	return array
 	(
-		'settings' => array
-		(
-			'class'       => 'Session',
-			'constructor' => 'instance',
-			'arguments'   => array('native'),
-			'shared'      => TRUE,
-		),
-	),
-	'model' => array
-	(
-		'settings' => array
-		(
-			'class'       => 'Model',
-			'constructor' => 'factory',
-		),
-
-		'user' => array
+		'session' => array
 		(
 			'settings' => array
 			(
-				'arguments' => array('user'),
-				'methods'   => array
+				'class'       => 'Session',
+				'constructor' => 'instance',
+				'arguments'   => array('native'),
+				'shared'      => TRUE,
+			),
+		),
+		'model' => array
+		(
+			'settings' => array
+			(
+				'class'       => 'Model',
+				'constructor' => 'factory',
+			),
+
+			'user' => array
+			(
+				'settings' => array
 				(
-					array('set_session', array('%session%')),
+					'arguments' => array('user'),
+					'methods'   => array
+					(
+						array('set_session', array('%session%')),
+					),
 				),
 			),
 		),
-	),
-	'swift' => array
-	(
-		'transport' => array
+		'swift' => array
 		(
-			'settings' => array
+			'transport' => array
 			(
-				'class'     => 'Swift_SmtpTransport',
-				'path'      => 'vendor/swiftmailer/lib/classes/Swift/SmtpTransport',
-				'arguments' => array('@email.host@', '@email.port@'),
-				'methods'   => array
+				'settings' => array
 				(
-					array('setEncryption', array('@email.encryption@')),
+					'class'     => 'Swift_SmtpTransport',
+					'path'      => 'vendor/swiftmailer/lib/classes/Swift/SmtpTransport',
+					'arguments' => array('@email.host@', '@email.port@'),
+					'methods'   => array
+					(
+						array('setEncryption', array('@email.encryption@')),
+					),
+				),
+			),
+			'mailer' => array
+			(
+				'settings' => array
+				(
+					'class'     => 'Swift_Mailer',
+					'path'      => 'vendor/swiftmailer/lib/classes/Swift/Mailer',
+					'arguments' => array('%swift.transport%'),
+					'shared'    => TRUE,
 				),
 			),
 		),
-		'mailer' => array
-		(
-			'settings' => array
-			(
-				'class'     => 'Swift_Mailer',
-				'path'      => 'vendor/swiftmailer/lib/classes/Swift/Mailer',
-				'arguments' => array('%swift.transport%'),
-				'shared'    => TRUE,
-			),
-		),
-	),
-);
-```
+	);
 
 You can also create a container by using the programmatic API.
 
-```php
-// Creation Code
-$container = new Dependency_Container(Dependency_Definition_List::factory()
-	->add('session', Dependency_Definition::factory()
-		->set_class('Session')
-		->set_constructor('instance')
-		->add_argument('native')
-		->set_shared(TRUE)
-	)
-	->add('model', Dependency_Definition::factory()
-		->set_class('Model')
-		->set_constructor('factory')
-	)
-	->add('model.user', Dependency_Definition::factory()
-		->add_argument('user')
-		->add_method('set_session', array('%session%'))
-	)
-	->add('swift.transport', Dependency_Definition::factory()
-		->set_class('Swift_SmtpTransport')
-		->set_path('vendor/swiftmailer/lib/classes/Swift/SmtpTransport')
-		->add_argument('@email.host@')
-		->add_argument('@email.port@')
-		->add_method('setEncryption', array('@email.encryption@'))
-	)
-	->add('swift.mailer', Dependency_Definition::factory()
-		->set_class('Swift_Mailer')
-		->set_path('vendor/swiftmailer/lib/classes/Swift/Mailer')
-		->add_argument('%swift.transport%')
-		->set_shared(TRUE)
-	)
-);
-```
+	// Creation Code
+	$container = new Dependency_Container(Dependency_Definition_List::factory()
+		->add('session', Dependency_Definition::factory()
+			->set_class('Session')
+			->set_constructor('instance')
+			->add_argument('native')
+			->set_shared(TRUE)
+		)
+		->add('model', Dependency_Definition::factory()
+			->set_class('Model')
+			->set_constructor('factory')
+		)
+		->add('model.user', Dependency_Definition::factory()
+			->add_argument('user')
+			->add_method('set_session', array('%session%'))
+		)
+		->add('swift.transport', Dependency_Definition::factory()
+			->set_class('Swift_SmtpTransport')
+			->set_path('vendor/swiftmailer/lib/classes/Swift/SmtpTransport')
+			->add_argument('@email.host@')
+			->add_argument('@email.port@')
+			->add_method('setEncryption', array('@email.encryption@'))
+		)
+		->add('swift.mailer', Dependency_Definition::factory()
+			->set_class('Swift_Mailer')
+			->set_path('vendor/swiftmailer/lib/classes/Swift/Mailer')
+			->add_argument('%swift.transport%')
+			->set_shared(TRUE)
+		)
+	);
