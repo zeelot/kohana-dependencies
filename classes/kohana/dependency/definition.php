@@ -2,27 +2,17 @@
 
 class Kohana_Dependency_Definition {
 
-	protected $_class;
-	protected $_path;
-	protected $_constructor;
-	protected $_arguments;
-	protected $_shared;
-	protected $_methods;
-	
-	public function __construct(array $settings = NULL)
+	public static function factory()
 	{
-		$this->_class       = NULL;
-		$this->_path        = NULL;
-		$this->_constructor = NULL;
-		$this->_arguments   = array();
-		$this->_shared      = FALSE;
-		$this->_methods     = array();
-
-		if ($settings)
-		{
-			$this->from_array($settings);
-		}
+		return new Dependency_Definition;
 	}
+
+	protected $_class       = NULL;
+	protected $_path        = NULL;
+	protected $_constructor = NULL;
+	protected $_arguments   = array();
+	protected $_shared      = FALSE;
+	protected $_methods     = array();
 
 	public function from_array(array $settings)
 	{
@@ -140,7 +130,7 @@ class Kohana_Dependency_Definition {
 		return (bool) $this->_shared;
 	}
 
-	public function overwrite_with(Dependency_Definition $new_definition)
+	public function merge_with(Dependency_Definition $new_definition)
 	{
 		$current_definition = clone $this;
 		foreach(get_object_vars($this) as $key => $value)

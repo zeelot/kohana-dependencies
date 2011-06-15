@@ -3,13 +3,11 @@
 class Kohana_Dependency_Container {
 
 	protected $_cache;
-	protected $_config;
 	protected $_definitions;
 
-	public function __construct(Config $config, Dependency_Definition_List $definitions)
+	public function __construct(Dependency_Definition_List $definitions)
 	{
 		$this->_cache       = array();
-		$this->_config      = $config;
 		$this->_definitions = $definitions;
 	}
 	
@@ -92,7 +90,10 @@ class Kohana_Dependency_Container {
 		
 		return $instance;
 	}
-	
+
+	/**
+	 * @todo Should create a Dependency_Argument class that is capable of resolving itself. The container shouldn't care.
+	 */
 	protected function _resolve_arguments(array $arguments)
 	{
 		foreach ($arguments as & $argument)
@@ -105,13 +106,7 @@ class Kohana_Dependency_Container {
 				}
 				elseif (preg_match('/\@.+\@/', $argument))
 				{
-					$argument = trim($argument, '@');
-					$group = $path = NULL;
-					if (strpos($argument, '.') !== FALSE)
-					{
-						list($group, $path) = explode('.', $argument, 2);
-					}
-					$argument = Arr::path($this->_config->load($group), $path);
+					$argument = Kohana::config(trim($argument, '@'));
 				}
 			}
 		}

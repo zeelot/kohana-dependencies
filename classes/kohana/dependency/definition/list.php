@@ -2,12 +2,12 @@
 
 class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAccess {
 
-	protected $_definitions;
-
-	public function __construct()
+	public static function factory()
 	{
-		$this->_definitions = array();
+		return new Dependency_Definition_List;
 	}
+
+	protected $_definitions = array();
 
 	public function add($key, Dependency_Definition $definition)
 	{
@@ -15,6 +15,8 @@ class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAcc
 			throw new Dependency_Exception('A dependency definition must be identified with a string key.');
 
 		$this->_definitions[$key] = $definition;
+
+		return $this;
 	}
 
 	public function get($key)
@@ -41,20 +43,13 @@ class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAcc
 		$definition = array_shift($relevant_definitions);
 		foreach ($relevant_definitions as $relevant_definition)
 		{
-			$definition = $definition->overwrite_with($relevant_definition);
+			$definition = $definition->merge_with($relevant_definition);
 		}
 
 		return $definition;
 	}
 
-	public function from_config(Config_Reader $config)
-	{
-		$this->_add_definitions_from_array($config->as_array());
-
-		return $this;
-	}
-
-	protected function _add_definitions_from_array(array $array, $parent_key = '')
+	public function from_array(array $array, $parent_key = '')
 	{
 		foreach ($array as $key => $sub_array)
 		{
@@ -66,8 +61,8 @@ class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAcc
 			if ($settings = Arr::get($sub_array, '_settings'))
 			{
 				// Create the definition and add it to the list
-				$definition = new Dependency_Definition($settings);
-				$this->add($full_key, $definition);
+				$definition = new Dependency_Definition;
+				$this->add($full_key, $definition->from_array($settings));
 
 				// Remove the settings from the array so we can look at the sub arrays only
 				unset($sub_array['_settings']);
@@ -76,9 +71,11 @@ class Kohana_Dependency_Definition_List implements Iterator, Countable, ArrayAcc
 			// Recursively call this method with the sub array (if not empty) to get more definitions
 			if ( ! empty($sub_array))
 			{
-				$this->_add_definitions_from_array($sub_array, $full_key);
+				$this->from_array($sub_array, $full_key);
 			}
 		}
+
+		return $this;
 	}
 
 	public function as_array()
