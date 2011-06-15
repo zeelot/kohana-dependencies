@@ -80,6 +80,7 @@ class Kohana_Dependency_Definition {
 
 	public function set_arguments(array $arguments)
 	{
+		$this->_arguments[] = array();
 		foreach ($arguments as $argument)
 		{
 			$this->add_argument($argument);
@@ -97,6 +98,7 @@ class Kohana_Dependency_Definition {
 
 	public function set_methods(array $methods)
 	{
+		$this->_methods[] = array();
 		foreach ($methods as $method)
 		{
 			$method_name = Arr::get($method, 0);
