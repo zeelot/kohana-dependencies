@@ -1,15 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Dependency_Injection_Container {
+class Kohana_Dependency_Container {
 
 	protected $_cache;
 	protected $_config;
 	protected $_definitions;
 
-	public function __construct(Config $config)
+	public function __construct(Config $config, Dependency_Definition_List $definitions)
 	{
-		$this->_cache  = array();
-		$this->_config = $config;
+		$this->_cache       = array();
+		$this->_config      = $config;
+		$this->_definitions = $definitions;
 	}
 	
 	public function get($key)
@@ -18,18 +19,14 @@ class Kohana_Dependency_Injection_Container {
 		if ($instance = $this->_cache($key))
 			return $instance;
 
-		// Get the dependency definition
-		if ( ! isset($this->_definitions[$key]))
-		{
-			$this->_definitions[$key] = new Dependency_Definition($key, $this->_config);
-		}
-		$definition = $this->_definitions[$key];
+		// Get the dependency definition from the definition list
+		$definition = $this->_definitions->get($key);
 
 		// Create an instance of the class using the definition
-		$instance = $this->_build($definition);
+		$instance = $this->_get_instance($definition);
 		
 		// Cache the instance if it is shared
-		if ($definition->shared)
+		if ($definition->is_shared())
 		{
 			$this->_cache($key, $instance);
 		}
@@ -53,12 +50,12 @@ class Kohana_Dependency_Injection_Container {
 			return NULL;
 	}
 	
-	protected function _build(Dependency_Definition $definition)
+	protected function _get_instance(Dependency_Definition $definition)
 	{
 		// Make sure the class exists
 		if ( ! class_exists($definition->class) AND ! empty($definition->path))
 		{
-			$this->_include_path($definition->path);
+			include_once $definition->path;
 		}
 
 		// Reflect the class and prepare the arguments
@@ -86,7 +83,7 @@ class Kohana_Dependency_Injection_Container {
 				$reflected_instance->getMethod($method)->invokeArgs($instance, $args);
 			}
 		}
-		catch (ReflectionException $ex)
+		catch (ReflectionException $e)
 		{
 			throw new Dependency_Exception('There was a problem instantiating the :class class in the DI_Container.', array(
 				':class' => $definition->class,
@@ -94,21 +91,6 @@ class Kohana_Dependency_Injection_Container {
 		}
 		
 		return $instance;
-	}
-	
-	protected function _include_path($path)
-	{
-		$file = NULL;
-		if (strpos($path, '/') !== FALSE)
-		{
-			list($directory, $filepath) = explode('/', $path, 2);
-			$file = Kohana::find_file($directory, $filepath);
-		}
-		
-		if (empty($file))
-			throw new Dependency_Exception('Could not find the path to include for the dependency definition.');
-		
-		require_once $file;
 	}
 	
 	protected function _resolve_arguments(array $arguments)

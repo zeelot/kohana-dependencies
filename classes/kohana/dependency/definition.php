@@ -2,95 +2,196 @@
 
 class Kohana_Dependency_Definition {
 
-	protected static $_definitions = array();
-	protected static $_defaults = array
-	(
-		'class'       => NULL,    // The class that is to be created.
-		'path'        => NULL,    // The path to the file containing the class. Will try to autoload the class if no path is provided. Assumes ".php" extension.
-		'constructor' => NULL,    // The method used to create the class. Will use "__construct()" if none is provided.
-		'arguments'   => NULL,    // The arguments to be passed to the constructor method.
-		'shared'      => FALSE,   // The shared setting determines if the object will be cached.
-		'methods'     => array(), // Additional methods (and their arguments) that need to be called on the created object.
-	);
+	protected $_class;
+	protected $_path;
+	protected $_constructor;
+	protected $_arguments;
+	protected $_shared;
+	protected $_methods;
 	
-	protected $_settings;
-	
-	public function __construct($key, Config $config)
+	public function __construct(array $settings = NULL)
 	{
-		// Store the list of definitions from the config
-		if (empty(self::$_definitions))
-		{
-			self::$_definitions = $config->load('dependencies')->as_array();
-		}
+		$this->_class       = NULL;
+		$this->_path        = NULL;
+		$this->_constructor = NULL;
+		$this->_arguments   = array();
+		$this->_shared      = FALSE;
+		$this->_methods     = array();
 
-		// Merge all relevant dependency definitions into one collection of settings
-		$settings = self::$_defaults;
-		$current_path = '';
-		foreach (explode('.', $key) as $sub_key)
+		if ($settings)
 		{
-			$current_path = trim($current_path.'.'.$sub_key, '.');
-			$path_settings = Arr::path(self::$_definitions, $current_path.'._settings', array());
-			$settings = Arr::overwrite($settings, $path_settings);
+			$this->from_array($settings);
 		}
-		
-		// Make sure the "class" setting is valid
-		if (empty($settings['class']))
-		{
-			$settings['class'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $settings['class'])));
-		}
-		
-		// Make sure the "path" setting is valid
-		if ( ! is_string($settings['path']))
-		{
-			$settings['path'] = NULL;
-		}
-		
-		// Make sure the "constructor" setting is valid
-		if ( ! is_string($settings['constructor']))
-		{
-			$settings['constructor'] = NULL;
-		}
-		
-		// Make sure the "arguments" setting is valid
-		if ( ! is_array($settings['arguments']))
-		{
-			$settings['arguments'] = array();
-		}
-		
-		// Make sure the "shared" setting is valid
-		$settings['shared'] = (bool) $settings['shared'];
-		
-		// Make sure the "methods" setting is valid
-		if (is_array($settings['methods']))
-		{
-			$methods = array();
-			foreach ($settings['methods'] as $method)
-			{
-				$method_name = (isset($method[0]) AND is_string($method[0])) ? $method[0] : NULL;
-				$arguments   = (isset($method[1]) AND is_array($method[1])) ? $method[1] : NULL;
-				$methods[]   = array($method_name, $arguments);
-			}
-			
-			$settings['methods'] = $methods;
-		}
-		else
-		{
-			$settings['methods'] = array();
-		}
-
-		$this->_settings = $settings;
 	}
 
-	public function __get($setting)
+	public function from_array(array $settings)
 	{
-		if (array_key_exists($setting, $this->_settings))
-			return $this->_settings[$setting];
+		// Remove all unneeded items
+		$allowed_keys = array('class', 'path', 'constructor', 'arguments', 'shared', 'methods');
+		$settings = array_filter(Arr::extract($settings, $allowed_keys));
+
+		// Loop through and use the class's setter methods
+		foreach ($settings as $key => $value)
+		{
+			// Decide which setter method to use
+			$set = 'set_'.$key;
+
+			$this->$set($value);
+		}
+
+		return $this;
+	}
+
+	public function set_class($class)
+	{
+		// Make sure the class name is valid
+		if (empty($class) OR ! $this->_valid_php_name($class))
+			throw new Dependency_Exception('Could not construct the dependency definition. An invalid class name was provided.');
+
+		$this->_class = $class;
+
+		return $this;
+	}
+
+	public function set_path($path)
+	{
+		// Make sure the path is a string
+		if ( ! is_string($path))
+		{
+			$path = '';
+		}
+
+		// Make sure the path exists
+		$file_path = NULL;
+		if (strpos($path, '/') !== FALSE)
+		{
+			list($directory, $file) = explode('/', $path, 2);
+			$file_path = Kohana::find_file($directory, $file);
+
+			if (empty($file_path))
+				throw new Dependency_Exception('Could not construct the dependency definition. An invalid path was provided.');
+		}
+
+		$this->_path = $file_path;
+
+		return $this;
+	}
+
+	public function set_constructor($method)
+	{
+		// Make sure the method name is valid
+		if (empty($method) OR ! $this->_valid_php_name($method))
+			throw new Dependency_Exception('Could not construct the dependency definition. An invalid constructor was provided.');
+
+		$this->_constructor = $method;
+
+		return $this;
+	}
+
+	public function set_arguments(array $arguments)
+	{
+		foreach ($arguments as $argument)
+		{
+			$this->add_argument($argument);
+		}
+
+		return $this;
+	}
+
+	public function set_shared($shared)
+	{
+		$this->_shared = (bool) $shared;
+
+		return $this;
+	}
+
+	public function set_methods(array $methods)
+	{
+		foreach ($methods as $method)
+		{
+			$method_name = Arr::get($method, 0);
+			$arguments   = Arr::get($method, 1, array());
+			$this->add_method($method_name, $arguments);
+		}
+
+		return $this;
+	}
+
+	public function add_argument($argument)
+	{
+		$this->_arguments[] = $argument;
+
+		return $this;
+	}
+
+	public function add_method($method, array $arguments = array())
+	{
+		// Make sure the method name is valid
+		if (empty($method) OR ! $this->_valid_php_name($method))
+			throw new Dependency_Exception('Could not construct the dependency definition. An invalid method was provided.');
+
+		$this->_methods[$method] = $arguments;
+
+		return $this;
+	}
+
+	public function is_shared()
+	{
+		return (bool) $this->_shared;
+	}
+
+	public function overwrite_with(Dependency_Definition $new_definition)
+	{
+		$current_definition = clone $this;
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$get = ltrim($key, '_');
+			$set = 'set'.$key;
+
+			$new_value = $new_definition->$get;
+			if ( ! empty($new_value))
+			{
+				$current_definition->$set($new_value);
+			}
+		}
+
+		return $current_definition;
+	}
+
+	public function __get($property)
+	{
+		if (property_exists($this, '_'.$property))
+			return $this->{'_'.$property};
 		else
 			return NULL;
 	}
 	
-	public function __isset($setting)
+	public function __isset($property)
 	{
-		return (bool) array_key_exists($setting, $this->_settings);
+		return (bool) property_exists($this, '_'.$property);
+	}
+
+	public function as_array()
+	{
+		$properties = array();
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$key = ltrim($key, '_');
+			$properties[$key] = $value;
+		}
+
+		return $properties;
+	}
+
+	/**
+	 * @param   string  A string representing a PHP variable, class, or function name
+	 * @return  bool    Whether or not the string is a valid PHP name.
+	 * @see  http://www.php.net/manual/en/language.variables.basics.php
+	 * @see  http://php.net/manual/en/language.oop5.basic.php
+	 * @see  http://www.php.net/manual/en/functions.user-defined.php
+	 */
+	protected function _valid_php_name($name)
+	{
+		return (bool) (is_string($name) AND preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/D', $name));
 	}
 }
