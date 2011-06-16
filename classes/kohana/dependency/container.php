@@ -58,7 +58,7 @@ class Kohana_Dependency_Container {
 
 		// Reflect the class and prepare the arguments
 		$class     = new ReflectionClass($definition->class);
-		$arguments = $this->_resolve_arguments($definition->arguments);
+		$arguments = array_map(array($this, '_resolve_argument'), $definition->arguments);
 
 		try
 		{
@@ -77,7 +77,7 @@ class Kohana_Dependency_Container {
 			foreach ($definition->methods as $method)
 			{
 				list($method, $args) = $method;
-				$args = $this->_resolve_arguments($args);
+				$args = array_map(array($this, '_resolve_argument'), $args);
 				$reflected_instance->getMethod($method)->invokeArgs($instance, $args);
 			}
 		}
@@ -91,26 +91,13 @@ class Kohana_Dependency_Container {
 		return $instance;
 	}
 
-	/**
-	 * @todo Should create a Dependency_Argument class that is capable of resolving itself. The container shouldn't care.
-	 */
-	protected function _resolve_arguments(array $arguments)
+	protected function _resolve_argument($argument)
 	{
-		foreach ($arguments as & $argument)
+		if ($argument instanceof Dependency_Reference)
 		{
-			if (is_string($argument))
-			{
-				if (preg_match('/\%.+\%/', $argument))
-				{
-					$argument = $this->get(trim($argument, '%'));
-				}
-				elseif (preg_match('/\@.+\@/', $argument))
-				{
-					$argument = Kohana::config(trim($argument, '@'));
-				}
-			}
+			$argument = $argument->resolve($this);
 		}
-		
-		return $arguments;
+
+		return $argument;
 	}
 }

@@ -36,58 +36,46 @@ You can create a container from an array of dependency definitions (i.e. from a 
 		->from_array(Kohana::config('dependencies')->as_array());
 	$container = new Dependency_Container($definitions);
 
+Here's a sample config file:
+
 	// Config File
-	return array
-	(
-		'session' => array
-		(
-			'settings' => array
-			(
+	return array(
+		'session' => array(
+			'settings' => array(
 				'class'       => 'Session',
 				'constructor' => 'instance',
-				'arguments'   => array('native'),
+				'arguments'   => array('@session.driver@'),
 				'shared'      => TRUE,
 			),
 		),
-		'model' => array
-		(
-			'settings' => array
-			(
+		'model' => array(
+			'settings' => array(
 				'class'       => 'Model',
 				'constructor' => 'factory',
 			),
 
-			'user' => array
-			(
-				'settings' => array
-				(
+			'user' => array(
+				'settings' => array(
 					'arguments' => array('user'),
-					'methods'   => array
-					(
+					'methods'   => array(
 						array('set_session', array('%session%')),
 					),
 				),
 			),
 		),
-		'swift' => array
-		(
-			'transport' => array
-			(
-				'settings' => array
-				(
+		'swift' => array(
+			'transport' => array(
+				'settings' => array(
 					'class'     => 'Swift_SmtpTransport',
 					'path'      => 'vendor/swiftmailer/lib/classes/Swift/SmtpTransport',
 					'arguments' => array('@email.host@', '@email.port@'),
-					'methods'   => array
-					(
+					'methods'   => array(
 						array('setEncryption', array('@email.encryption@')),
 					),
 				),
 			),
-			'mailer' => array
-			(
-				'settings' => array
-				(
+			'mailer' => array(
+				'settings' => array(
 					'class'     => 'Swift_Mailer',
 					'path'      => 'vendor/swiftmailer/lib/classes/Swift/Mailer',
 					'arguments' => array('%swift.transport%'),
@@ -104,7 +92,7 @@ You can also create a container by using the programmatic API.
 		->add('session', Dependency_Definition::factory()
 			->set_class('Session')
 			->set_constructor('instance')
-			->add_argument('native')
+			->add_argument(new Dependency_Reference_Config('session.driver'))
 			->set_shared(TRUE)
 		)
 		->add('model', Dependency_Definition::factory()
@@ -113,19 +101,19 @@ You can also create a container by using the programmatic API.
 		)
 		->add('model.user', Dependency_Definition::factory()
 			->add_argument('user')
-			->add_method('set_session', array('%session%'))
+			->add_method('set_session', array(new Dependency_Reference_Container('session')))
 		)
 		->add('swift.transport', Dependency_Definition::factory()
 			->set_class('Swift_SmtpTransport')
 			->set_path('vendor/swiftmailer/lib/classes/Swift/SmtpTransport')
-			->add_argument('@email.host@')
-			->add_argument('@email.port@')
-			->add_method('setEncryption', array('@email.encryption@'))
+			->add_argument(new Dependency_Reference_Config('email.host'))
+			->add_argument(new Dependency_Reference_Config('email.port'))
+			->add_method('setEncryption', array(new Dependency_Reference_Config('email.encryption')))
 		)
 		->add('swift.mailer', Dependency_Definition::factory()
 			->set_class('Swift_Mailer')
 			->set_path('vendor/swiftmailer/lib/classes/Swift/Mailer')
-			->add_argument('%swift.transport%')
+			->add_argument(new Dependency_Reference_Container('swift.transport'))
 			->set_shared(TRUE)
 		)
 	);

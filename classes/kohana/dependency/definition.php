@@ -80,7 +80,7 @@ class Kohana_Dependency_Definition {
 
 	public function set_arguments(array $arguments)
 	{
-		$this->_arguments[] = array();
+		$this->_arguments = array();
 		foreach ($arguments as $argument)
 		{
 			$this->add_argument($argument);
@@ -98,7 +98,7 @@ class Kohana_Dependency_Definition {
 
 	public function set_methods(array $methods)
 	{
-		$this->_methods[] = array();
+		$this->_methods = array();
 		foreach ($methods as $method)
 		{
 			$method_name = Arr::get($method, 0);
@@ -111,7 +111,7 @@ class Kohana_Dependency_Definition {
 
 	public function add_argument($argument)
 	{
-		$this->_arguments[] = $argument;
+		$this->_arguments[] = $this->_handle_reference($argument);
 
 		return $this;
 	}
@@ -121,6 +121,11 @@ class Kohana_Dependency_Definition {
 		// Make sure the method name is valid
 		if (empty($method) OR ! $this->_valid_php_name($method))
 			throw new Dependency_Exception('Could not construct the dependency definition. An invalid method was provided.');
+
+		foreach ($arguments as & $argument)
+		{
+			$argument = $this->_handle_reference($argument);
+		}
 
 		$this->_methods[$method] = $arguments;
 
@@ -170,6 +175,16 @@ class Kohana_Dependency_Definition {
 		}
 
 		return $properties;
+	}
+
+	protected function _handle_reference($argument)
+	{
+		if ( ! empty($argument) AND is_string($argument) AND in_array($argument[0], array('%', '@')))
+		{
+			$argument = Dependency_Reference::factory($argument);
+		}
+
+		return $argument;
 	}
 
 	/**
