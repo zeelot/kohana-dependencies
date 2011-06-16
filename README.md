@@ -4,7 +4,7 @@
 
 Assuming you are in the context of a controller, and it has an instance of the container, you could do...
 
-	$mailer = $this->container('swift.mailer');
+	$mailer = $this->container->get('swift.mailer');
 
 What does this get you? Well, assuming you have some killer dependency definitions setup, it would return a fully
 initialized instance of a SwiftMailer object with all dependencies and configurations applied. If you have worked with
@@ -14,7 +14,7 @@ Or... how would you like to instantiate a User Model (using any ORM-like library
 Session and an Event Dispatcher whilst maintaining proper Inversion of Control, but without the headache you are about
 to have instantiating it manually? You would? Great! Once configured, it could probably look something like:
 
-	$user = $this->container('model.user')->find($this->request->param('user_id));
+	$user = $this->container->get('model.user')->find($this->request->param('user_id));
 
 You are only limited by your imagination... and PHP.
 
