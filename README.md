@@ -1,5 +1,15 @@
 # Dependency Injection Made Easy
 
+## About Dependency Injection and Dependency Injection Containers
+
+Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control), or Dependency Inversion, principle. A dependency injection container is a component used manage dependencies and make dependency injection easier to maintain. For information about dependency injection, you should read from the following articles:
+
+- <http://martinfowler.com/articles/injection.html>
+- <http://fabien.potencier.org/article/11/what-is-dependency-injection>
+- <http://misko.hevery.com/2008/07/08/how-to-think-about-the-new-operator>
+- <http://misko.hevery.com/2008/09/10/where-have-all-the-new-operators-gone>
+- <http://misko.hevery.com/2008/09/30/to-new-or-not-to-new>  **awesome**
+
 ## Using the Container
 
 Assuming you are in the context of a controller, and it has an instance of the container, you could do...
