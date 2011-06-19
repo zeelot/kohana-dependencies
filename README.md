@@ -2,15 +2,19 @@
 
 ## About Dependency Injection and Dependency Injection Containers
 
-Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control), or Dependency Inversion, principle. A dependency injection container is a component used manage dependencies and make dependency injection easier to maintain. For information about dependency injection, you should read from the following articles:
+Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control), or Dependency Inversion, principle. A dependency injection container (DIC) is a component used to manage dependencies and make dependency injection easier to maintain. For information about dependency injection, you should read from the following articles:
 
 - <http://martinfowler.com/articles/injection.html>
 - <http://fabien.potencier.org/article/11/what-is-dependency-injection>
 - <http://misko.hevery.com/2008/07/08/how-to-think-about-the-new-operator>
 - <http://misko.hevery.com/2008/09/10/where-have-all-the-new-operators-gone>
-- <http://misko.hevery.com/2008/09/30/to-new-or-not-to-new>  **awesome**
+- <http://misko.hevery.com/2008/09/30/to-new-or-not-to-new>  *(awesome)*
 
-## Using the Container
+## Using this Dependency Injection Container
+
+The container has a `->get($key)` method that is used to get an instance of an object identified by a `$key`. The container uses the dependency definitions you setup to create the object instance in the proper way, with all of its necessary dependencies.
+
+### Usage Examples
 
 Assuming you are in the context of a controller, and it has an instance of the container, you could do...
 
@@ -30,12 +34,12 @@ You are only limited by your imagination... and PHP.
 
 ## Dependency Definition Settings
 
-- class:        The name of the class that is to be created.
-- path:         The path to the file containing the class. Will try to autoload the class if none is provided.
-- constructor:  The method used to create the class. Will use `__construct()` if none is provided.
-- arguments:    The arguments to be passed to the constructor method.
-- shared:       The shared setting determines if the object will be cached. This is `FALSE` by default.
-- methods:      Additional methods (and their arguments) that need to be called on the created object.
+- `class`:        The name of the class that is to be created.
+- `path`:         The path to the file containing the class. Will try to autoload the class if none is provided.
+- `constructor`:  The method used to create the class. Will use `__construct()` if none is provided.
+- `arguments`:    The arguments to be passed to the constructor method.
+- `shared`:       The shared setting determines if the object will be cached. This is `FALSE` by default.
+- `methods`:      Additional methods (and their arguments) that need to be called on the created object.
 
 ## Creating a Container
 
