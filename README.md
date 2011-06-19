@@ -1,4 +1,4 @@
-# Dependency Injection Made Easy
+# Dependency Injection Made Easy in Kohana
 
 ## About Dependency Injection and Dependency Injection Containers
 
