@@ -27,7 +27,7 @@ Assuming you are in the context of a controller, and it has an instance of the c
 
 	$mailer = $this->container->get('swift.mailer');
 
-What does this get you? Well, assuming you have some killer dependency definitions setup, it would return a fully
+What does this get you? Well, assuming you have some killer dependency definitions (shown later below) setup, it would return a fully
 initialized instance of a SwiftMailer object with all dependencies and configurations applied. If you have worked with
 SwiftMailer before, you know that creating an instance manually is a pain.
 
