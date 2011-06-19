@@ -2,7 +2,14 @@
 
 ## About Dependency Injection and Dependency Injection Containers
 
-Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control), or Dependency Inversion, principle. A dependency injection container (DIC) is a component used to manage dependencies and make dependency injection easier to maintain. For information about dependency injection, you should read from the following articles:
+Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control), or Dependency Inversion, principle. A dependency injection container (DIC) is a component used to manage dependencies and make dependency injection easier to maintain. Some of the main arguments for using dependency injection are that it:
+
+- Makes unit testing and mocking easier (or possible)
+- Decouples object instantiation from usage
+- Allows for better separation of concerns and higher object cohesion
+- Reduces the usage and need for singleton classes which are [considered](http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons) [bad](http://gooh.posterous.com/singletons-in-php) by [many](http://blogs.sitepoint.com/whats-so-bad-about-the-singleton) [people](http://sebastian-bergmann.de/archives/882-Testing-Code-That-Uses-Singletons.html)
+
+For information about dependency injection, you should read from the following articles:
 
 - <http://martinfowler.com/articles/injection.html>
 - <http://fabien.potencier.org/article/11/what-is-dependency-injection>
