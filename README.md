@@ -1,5 +1,10 @@
 # Dependency Injection Made Easy in Kohana
 
+A simple dependency injection container for Kohana 3.x.
+
+- **Author**: Jeremy Lindblom ([jeremeamia](https://github.com/jeremeamia))
+- **Version**: 0.5
+
 ## About Dependency Injection and Dependency Injection Containers
 
 Dependency injection is a method used follow the [Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control) (IoC), or Dependency Inversion, principle. A dependency injection container (DIC) is a component used to manage dependencies and make dependency injection easier to maintain. Some of the main arguments for using dependency injection are that it:
