@@ -62,7 +62,7 @@ Here's a sample config file:
 	// Config File
 	return array(
 		'session' => array(
-			'settings' => array(
+			'_settings' => array(
 				'class'       => 'Session',
 				'constructor' => 'instance',
 				'arguments'   => array('@session.driver@'),
@@ -70,13 +70,13 @@ Here's a sample config file:
 			),
 		),
 		'model' => array(
-			'settings' => array(
+			'_settings' => array(
 				'class'       => 'Model',
 				'constructor' => 'factory',
 			),
 
 			'user' => array(
-				'settings' => array(
+				'_settings' => array(
 					'arguments' => array('user'),
 					'methods'   => array(
 						array('set_session', array('%session%')),
@@ -86,7 +86,7 @@ Here's a sample config file:
 		),
 		'swift' => array(
 			'transport' => array(
-				'settings' => array(
+				'_settings' => array(
 					'class'     => 'Swift_SmtpTransport',
 					'path'      => 'vendor/swiftmailer/lib/classes/Swift/SmtpTransport',
 					'arguments' => array('@email.host@', '@email.port@'),
@@ -96,7 +96,7 @@ Here's a sample config file:
 				),
 			),
 			'mailer' => array(
-				'settings' => array(
+				'_settings' => array(
 					'class'     => 'Swift_Mailer',
 					'path'      => 'vendor/swiftmailer/lib/classes/Swift/Mailer',
 					'arguments' => array('%swift.transport%'),
