@@ -2,7 +2,7 @@
 
 abstract class Kohana_Dependency_Reference {
 
-	const KEY_FORMAT = '[0-9a-zA-Z_-]+([0-9a-zA-Z_-]+)*';
+	const KEY_FORMAT = '[0-9a-zA-Z_-]+(\.[0-9a-zA-Z_-]+)*';
 
 	public static function factory($argument)
 	{
