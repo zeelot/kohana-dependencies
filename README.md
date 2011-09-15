@@ -1,9 +1,9 @@
 # Dependency Injection Made Easy in Kohana
 
-A simple dependency injection container for Kohana 3.1.x
+A simple dependency injection container for Kohana 3.2.x
 
 - **Author**: Jeremy Lindblom ([jeremeamia](https://github.com/jeremeamia))
-- **Version**: 0.5
+- **Version**: 0.6
 
 ## About Dependency Injection and Dependency Injection Containers
 
