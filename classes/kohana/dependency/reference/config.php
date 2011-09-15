@@ -4,7 +4,7 @@ class Kohana_Dependency_Reference_Config extends Dependency_Reference {
 
 	public function resolve(Dependency_Container $container)
 	{
-		return Kohana::config($this->_key);
+		return Kohana::$config->load($this->_key);
 	}
 
 }
