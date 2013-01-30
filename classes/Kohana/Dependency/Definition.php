@@ -34,10 +34,6 @@ class Kohana_Dependency_Definition {
 
 	public function set_class($class)
 	{
-		// Make sure the class name is valid
-		if (empty($class) OR ! $this->_valid_php_name($class))
-			throw new Dependency_Exception('Could not construct the dependency definition. An invalid class name was provided.');
-
 		$this->_class = $class;
 
 		return $this;
@@ -69,10 +65,6 @@ class Kohana_Dependency_Definition {
 
 	public function set_constructor($method)
 	{
-		// Make sure the method name is valid
-		if (empty($method) OR ! $this->_valid_php_name($method))
-			throw new Dependency_Exception('Could not construct the dependency definition. An invalid constructor was provided.');
-
 		$this->_constructor = $method;
 
 		return $this;
@@ -118,10 +110,6 @@ class Kohana_Dependency_Definition {
 
 	public function add_method($method, array $arguments = array())
 	{
-		// Make sure the method name is valid
-		if (empty($method) OR ! $this->_valid_php_name($method))
-			throw new Dependency_Exception('Could not construct the dependency definition. An invalid method was provided.');
-
 		foreach ($arguments as & $argument)
 		{
 			$argument = $this->_handle_reference($argument);
@@ -185,17 +173,5 @@ class Kohana_Dependency_Definition {
 		}
 
 		return $argument;
-	}
-
-	/**
-	 * @param   string  A string representing a PHP variable, class, or function name
-	 * @return  bool    Whether or not the string is a valid PHP name.
-	 * @see  http://www.php.net/manual/en/language.variables.basics.php
-	 * @see  http://php.net/manual/en/language.oop5.basic.php
-	 * @see  http://www.php.net/manual/en/functions.user-defined.php
-	 */
-	protected function _valid_php_name($name)
-	{
-		return (bool) (is_string($name) AND preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/D', $name));
 	}
 }
