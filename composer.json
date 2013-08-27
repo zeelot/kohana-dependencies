@@ -1,0 +1,38 @@
+{
+	"name":        "zeelot/kohana-dependencies",
+	"type":        "library",
+	"description": "A Dependency Injection Container Module for Kohana 3.x",
+	"homepage":    "https://github.com/Zeelot/kohana-dependencies",
+	"license":     "BSD-3-Clause",
+	"keywords":    ["kohana", "dependencies", "dependency"],
+	"authors": [
+		{
+			"name":     "Lorenzo Pisani",
+			"email":    "zeelot3k@gmail.com",
+			"homepage": "http://zeelot3k.com",
+			"role":     "developer"
+		},
+		{
+			"name":     "Jeremy Lindblom",
+			"email":    "jeremeamia@gmail.com",
+			"homepage": "https://github.com/jeremeamia",
+			"role":     "developer"
+		}
+	],
+	"support": {
+		"issues":   "https://github.com/Zeelot/kohana-dependencies/issues",
+		"source":   "https://github.com/Zeelot/kohana-dependencies"
+	},
+	"require": {
+		"composer/installers": "~1.0",
+		"kohana/core":         ">=3.3",
+		"php":                 ">=5.3.3"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-0.5/develop": "0.5.x-dev",
+			"dev-0.6/develop": "0.6.x-dev",
+			"dev-0.7/develop": "0.7.x-dev"
+		}
+	}
+}
