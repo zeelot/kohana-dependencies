@@ -17,8 +17,7 @@ class Dependency_Compiler
  * Auto-generated from your services configuration
  * [!!] Changes will be overwritten
  */
-
-class :class_name extends \Dependency_Container {
+class :class_name extends :parent_class_name {
 
 
 PHP;
@@ -103,7 +102,7 @@ PHP;
 		);
 	}
 
-	/**
+    /**
 	 * @param Dependency_Definition $definition
 	 * @return string
 	 */
@@ -124,13 +123,13 @@ PHP;
 		return 'mixed';
 	}
 
-	/**
+    /**
 	 * @return void
 	 */
 	protected function write_class_definition()
 	{
-		$content = strtr(self::CLASS_HEADER, array(':class_name' => $this->class_name));
-		ksort($this->getters);
+        $content = $this->build_class_header();
+        ksort($this->getters);
 		foreach ($this->getters as $getter) {
 			$content .= strtr(self::GETTER_METHOD, $getter);
 		}
@@ -138,7 +137,22 @@ PHP;
 		file_put_contents($this->filename, $content);
 	}
 
-	/**
+    /**
+     * @return string
+     */
+    protected function build_class_header()
+    {
+        $params = array(':class_name' => $this->class_name);
+        if ($this->class_name === 'Dependency_Container') {
+            $params[':parent_class_name'] = '\Kohana_Dependency_Container';
+        } else {
+            $params[':parent_class_name'] = '\Dependency_Container';
+        }
+
+        return strtr(self::CLASS_HEADER, $params);
+    }
+
+    /**
 	 * @throws InvalidArgumentException if any service definitions are not valid
 	 */
 	protected function validate_service_definitions()
@@ -170,7 +184,7 @@ PHP;
 		}
 	}
 
-	/**
+    /**
 	 * @param object $service
 	 * @param string $declared_type
 	 *

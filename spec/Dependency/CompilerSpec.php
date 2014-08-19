@@ -50,7 +50,14 @@ class Dependency_CompilerSpec extends ObjectBehavior
 		$this->given_compiled_to_unique_class(new \Dependency_Definition_List);
 	}
 
-	function its_compiled_class_is_an_instantiable_dependency_container()
+    function its_compiled_class_extends_kohana_dependency_container_if_classname_conflicts()
+    {
+        $file = $this->given_compiled_to_temp_file('SomeClass', new \Dependency_Definition_List);
+        expect(file_get_contents($file))->toMatch('/class SomeClass extends \\\\Dependency_Container/');
+    }
+
+
+    function its_compiled_class_is_an_instantiable_dependency_container()
 	{
 		$dependencies = new \Dependency_Definition_List;
 		$class = $this->given_compiled_to_unique_class(new \Dependency_Definition_List);
