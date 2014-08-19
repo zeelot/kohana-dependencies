@@ -28,6 +28,11 @@
 		"kohana/core":         ">=3.3",
 		"php":                 ">=5.3.3"
 	},
+	"require-dev": {
+		"kohana/koharness":       "dev-master",
+		"phpspec/phpspec":        "dev-master",
+		"bossa/phpspec2-expect":  "dev-master"
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-0.5/develop": "0.5.x-dev",
