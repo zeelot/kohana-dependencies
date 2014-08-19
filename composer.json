@@ -31,7 +31,8 @@
 	"require-dev": {
 		"kohana/koharness":       "dev-master",
 		"phpspec/phpspec":        "dev-master",
-		"bossa/phpspec2-expect":  "dev-master"
+		"bossa/phpspec2-expect":  "dev-master",
+		"mikey179/vfsStream":     "~1.3"
 	},
 	"extra": {
 		"branch-alias": {
