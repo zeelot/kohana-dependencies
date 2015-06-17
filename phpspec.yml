@@ -1,0 +1,5 @@
+formatter.name: pretty
+suites:
+  main:
+    src_path:  classes
+    namespace:

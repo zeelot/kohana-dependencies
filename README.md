@@ -143,3 +143,32 @@ You can also create a container by using the programmatic API.
 			->set_shared(TRUE)
 		)
 	);
+
+## Compiling a dependency container
+
+By default, you access dependencies by their service path. If you want, you can compile a container class that exposes
+each service as a typehinted method.
+
+In other words:
+
+```php
+// You get this
+$services->get_swift_mailer()->send($message);
+
+// Instead of this
+$services->get('swift.mailer').send($message);
+```
+
+This provides several benefits:
+
+* IDE autocompletion of available services
+* IDE autocompletion and usage detection of the methods on the services themselves
+* Clear, maintainable, definitions of which implementation of an interface is actually in use for easier debugging
+* Compile-time validation of your service configurations
+
+Compile your dependencies with the provided [compile:dependencies](classes/Task/Compile/Dependencies.php) minion task.
+During the task, the compiler will create every service in your definition list, and fail with an error if any service
+cannot be instantiated.
+
+The recommended use is to place this minion task within your build/deploy task, so that the container is compiled fresh
+for every deployment and fails early if there are any undetected breaking changes in your dependencies.

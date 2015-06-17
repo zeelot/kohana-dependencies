@@ -1,0 +1,11 @@
+language: php
+
+php: [5.3]
+
+before_script:
+  - composer self-update
+  - composer install
+  # Generate the koharness Kohana default application
+  - vendor/bin/koharness
+
+script: vendor/bin/phpspec
